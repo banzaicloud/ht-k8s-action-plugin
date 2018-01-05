@@ -1,0 +1,8 @@
+#logger settings
+[log]
+    format = "text"
+    level = "debug"
+
+# plugin settings
+[plugin]
+    port = "8887"

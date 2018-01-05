@@ -1,0 +1,9 @@
+_state*
+.idea*
+.DS_Store
+bin/*
+.idea/
+conf/config.toml
+*.swp
+.ht-k8s-action-plugin
+ht-k8s-action-plugin
