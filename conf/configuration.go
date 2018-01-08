@@ -2,7 +2,6 @@ package conf
 
 import (
 	"github.com/spf13/viper"
-	"fmt"
 	"strings"
 	"log"
 )
@@ -15,14 +14,17 @@ func init() {
 	viper.SetConfigName("plugin-config")
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file, %s", err)
+		log.Printf("Error reading config file, %s\n", err)
+		log.Println("Using environment variables only.")
+	} else {
+		log.Printf("Using config: %s\n", viper.ConfigFileUsed())
 	}
 
-	fmt.Printf("Using config: %s\n", viper.ConfigFileUsed())
 	viper.SetEnvPrefix("htplugin")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
 	viper.SetDefault("plugin.port", "8887")
+	viper.SetDefault("log.level", "info")
+	viper.SetDefault("log.format", "text")
 }
-
