@@ -8,6 +8,8 @@ import (
 	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
 	"github.com/banzaicloud/ht-k8s-action-plugin/plugin"
 	"github.com/spf13/viper"
+	"github.com/ericchiang/k8s"
+	"context"
 )
 
 var log *logrus.Entry
@@ -36,5 +38,16 @@ func (d *K8sAlertHandler) Handle(event *as.AlertEvent) (*as.ActionResult, error)
 func main() {
 	port := viper.GetInt("plugin.port")
 	fmt.Printf("Starting Hollowtrees ActionServer on port %d", port)
+	client, err := k8s.NewInClusterClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+	nodes, err := client.CoreV1().ListNodes(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, node := range nodes.Items {
+		fmt.Printf("name=%q schedulable=%t\n", *node.Metadata.Name, !*node.Spec.Unschedulable)
+	}
 	as.Serve(port, newK8sAlertHandler())
 }

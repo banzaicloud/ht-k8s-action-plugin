@@ -8,6 +8,12 @@
   revision = "4d9114ef859186de4aa7e192653e572e9f770a33"
 
 [[projects]]
+  name = "github.com/ericchiang/k8s"
+  packages = [".","api/resource","api/unversioned","api/v1","apis/apps/v1alpha1","apis/apps/v1beta1","apis/authentication/v1","apis/authentication/v1beta1","apis/authorization/v1","apis/authorization/v1beta1","apis/autoscaling/v1","apis/autoscaling/v2alpha1","apis/batch/v1","apis/batch/v2alpha1","apis/certificates/v1alpha1","apis/certificates/v1beta1","apis/extensions/v1beta1","apis/imagepolicy/v1alpha1","apis/meta/v1","apis/policy/v1alpha1","apis/policy/v1beta1","apis/rbac/v1alpha1","apis/rbac/v1beta1","apis/settings/v1alpha1","apis/storage/v1","apis/storage/v1beta1","runtime","runtime/schema","util/intstr","watch/versioned"]
+  revision = "68b0248f880c5967d1ba7166486cb216af849b15"
+  version = "v0.4.0"
+
+[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "629574ca2a5df945712d3079857300b5e4da0236"
@@ -105,6 +111,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/tools"
+  packages = ["go/ast/astutil","go/buildutil","go/loader"]
+  revision = "8cab8a1319f0be9798e7fe78b15da75e5f94b2e9"
+
+[[projects]]
+  branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   revision = "a8101f21cf983e773d0c1133ebc5424792003214"
@@ -124,6 +136,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4ffda6715d2a7e0357109ca6783f7540e40a96fdfe6a2b12a555c7c004ddeeb6"
+  inputs-digest = "4985d0c632352344a70e836ae581978f9bd21653bde2cb0116f601f1f924b0b0"
   solver-name = "gps-cdcl"
   solver-version = 1
