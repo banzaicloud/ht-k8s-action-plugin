@@ -12,7 +12,7 @@ clean: ## deletes ./bin directory
 	rm -rf ./bin
 
 docker-build: ## builds a docker image with the binary
-	docker build -t banzaicloud/ht-k8s-action-plugin .
+	docker build -t banzaicloud/ht-k8s-action-plugin:$(GITREV) .
 
 deps: ## downloads dep tool if not present
 	which dep > /dev/null || go get -u github.com/golang/dep/cmd/dep 
