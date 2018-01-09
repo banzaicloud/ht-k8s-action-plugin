@@ -7,6 +7,7 @@ import (
 	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -23,16 +24,29 @@ func init() {
 func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {
 	switch event.EventType {
 	case "prometheus.server.alert.SpotTerminationNotice":
-		fmt.Println("I got a spot termination notice")
-		nodes, err := r.Clientset.CoreV1().Nodes().List(metav1.ListOptions{})
+		log.Infof("Received %s", event.EventType)
+		err := r.drainNode(event.Data["instance"])
 		if err != nil {
-			panic(err.Error())
+			return err
 		}
-		fmt.Printf("There are %d nodes in the cluster\n", len(nodes.Items))
-		for _, n := range nodes.Items {
-			fmt.Println(n.Name, n.Status)
-		}
-
 	}
 	return nil
+}
+
+func (r *EventRouter) drainNode(nodeName string) error {
+
+	// TODO: cordon node: https://github.com/kubernetes/kubernetes/blob/master/pkg/kubectl/cmd/drain.go#L701?
+
+	podList, err := r.Clientset.CoreV1().Pods(metav1.NamespaceAll).List(metav1.ListOptions{
+		FieldSelector: fields.SelectorFromSet(fields.Set{"spec.nodeName": nodeName}).String()})
+	if err != nil {
+		log.Errorf("couldn't get pods for node: %s", err.Error())
+		return err
+	}
+
+	// TODO: use eviction API to drain node
+
+	for _, pod := range podList.Items {
+		fmt.Println(pod.Name, pod.UID)
+	}
 }

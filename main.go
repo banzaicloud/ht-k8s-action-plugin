@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
@@ -51,24 +52,5 @@ func (d *K8sAlertHandler) Handle(event *as.AlertEvent) (*as.ActionResult, error)
 func main() {
 	port := viper.GetInt("plugin.port")
 	fmt.Printf("Starting Hollowtrees ActionServer on port %d\n", port)
-
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		log.Fatalf("Failed to create in cluster configuration: %s\n", err.Error())
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		log.Fatalf("Failed to create kubernetes clientset: %s\n", err.Error())
-	}
-
-	nodes, err := clientset.CoreV1().Nodes().List(metav1.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
-	fmt.Printf("There are %d nodes in the cluster\n", len(nodes.Items))
-	for _, n := range nodes.Items {
-		fmt.Println(n.Name, n.Status)
-	}
-
 	as.Serve(port, newK8sAlertHandler())
 }
