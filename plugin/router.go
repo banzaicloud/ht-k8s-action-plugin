@@ -5,12 +5,13 @@ import (
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
 	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
-	"github.com/ericchiang/k8s"
 	"github.com/sirupsen/logrus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 type EventRouter struct {
-	Client *k8s.Client
+	Clientset *kubernetes.Clientset
 }
 
 var log *logrus.Entry
@@ -19,30 +20,18 @@ func init() {
 	log = conf.Logger().WithField("package", "plugin")
 }
 
-
 func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {
 	switch event.EventType {
 	case "prometheus.server.alert.SpotTerminationNotice":
 		fmt.Println("I got a spot termination notice")
-		//
-		//// get pods on node
-		//node, err := r.Client.CoreV1().GetNode(context.Background(), "minikube")
-		//if err != nil {
-		//	log.Errorf("error: %v", err)
-		//}
-		//fmt.Println(node)
-		//var fs fieldSelectorOption = "spec.nodeName=minikube"
-		//pods, err := r.Client.CoreV1().ListPods(context.Background(), "default", fs)
-		//
-		//for _, pod := range pods.Items {
-		//	fmt.Printf("name=%s status=%s\n", *pod.Metadata.Name, *pod.Status.Message)
-		//}
-
-		//evict pods
-		//nodes, err := r.Client.PolicyV1Beta1().CreateEviction() CoreV1().nodeListNodes(context.Background())
-		//if err != nil {
-		//	log.Fatal(err)
-		//}
+		nodes, err := r.Clientset.CoreV1().Nodes().List(metav1.ListOptions{})
+		if err != nil {
+			panic(err.Error())
+		}
+		fmt.Printf("There are %d nodes in the cluster\n", len(nodes.Items))
+		for _, n := range nodes.Items {
+			fmt.Println(n.Name, n.Status)
+		}
 
 	}
 	return nil

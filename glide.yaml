@@ -7,3 +7,7 @@ import:
   version: ^1.0.4
 - package: github.com/spf13/viper
   version: ^1.0.0
+- package: k8s.io/client-go
+  version: v6.0.0
+#- package: k8s.io/apimachinery
+#  version: 180eddb345a5be3a157cea1c624700ad5bd27b8f # kubernetes-1.9.0

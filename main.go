@@ -1,15 +1,16 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
 	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
 	"github.com/banzaicloud/ht-k8s-action-plugin/plugin"
-	"github.com/ericchiang/k8s"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 var log *logrus.Entry
@@ -23,13 +24,17 @@ type K8sAlertHandler struct {
 }
 
 func newK8sAlertHandler() *K8sAlertHandler {
-	client, err := k8s.NewInClusterClient()
+	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create in cluster configuration: %s\n", err.Error())
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatalf("Failed to create kubernetes clientset: %s\n", err.Error())
 	}
 	return &K8sAlertHandler{
 		Router: &plugin.EventRouter{
-			Client: client,
+			Clientset: clientset,
 		},
 	}
 }
@@ -47,18 +52,23 @@ func main() {
 	port := viper.GetInt("plugin.port")
 	fmt.Printf("Starting Hollowtrees ActionServer on port %d\n", port)
 
-
-	client, err := k8s.NewInClusterClient()
+	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create in cluster configuration: %s\n", err.Error())
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatalf("Failed to create kubernetes clientset: %s\n", err.Error())
 	}
 
-	// get pods on node
-	node, err := client.CoreV1().GetNode(context.Background(), "minikube")
+	nodes, err := clientset.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
-		log.Errorf("error: %v", err)
+		panic(err.Error())
 	}
-	fmt.Println(node)
+	fmt.Printf("There are %d nodes in the cluster\n", len(nodes.Items))
+	for _, n := range nodes.Items {
+		fmt.Println(n.Name, n.Status)
+	}
 
 	as.Serve(port, newK8sAlertHandler())
 }
