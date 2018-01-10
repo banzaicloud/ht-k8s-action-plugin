@@ -8,8 +8,6 @@ import (
 	"github.com/banzaicloud/ht-k8s-action-plugin/plugin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
