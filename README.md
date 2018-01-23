@@ -1,12 +1,46 @@
-## Hollowtrees Kubernetes action plugin
+### Kubernetes Hollowtrees action plugin
 
-Hollowtrees **action plugins** are microservices that can be configured in the [Hollowtrees rule engine](https://github.com/banzaicloud/hollowtrees) to react to specific events that occur in a cloud native environment.
-Plugins are listening on a *GRPC* interface.
-This specific plugin is used to interact with Kubernetes on specific event triggers.
-It must be deployed inside a Kubernetes cluster, because it uses the `InCluster` configuration to interact with the Kubernetes API.
+This is an action plugin for the [Hollowtrees](https://github.com/banzaicloud/hollowtrees) project.
+It interacts with the Kubernetes API to handle different Hollowtrees events in a K8S cluster. 
 
-### Supported events
+When started it is listening on a GRPC interface and accepts Hollowtrees events.
 
-Currently only one type of event is supported: `prometheus.server.alert.SpotTerminationNotice`
+### Quick start
 
-* when this event is sent to the plugin, it makes the node unschedulable and evicts all running pods to prepare for the node termination
+The project can be build with `make`. To create the binary locally, run:
+```
+make build
+```
+It creates the binary in the `./bin` directory.
+
+To create a docker image that can be run on Kubernetes run:
+```
+make docker-build
+```
+It creates a docker image with the name `banzaicloud/ht-k8s-action-plugin:$(GIT_REVISION)`
+
+### Configuration
+
+The following options can be configured when starting the action plugin. Configuration is done through a `plugin-config.toml` file that can be placed in `conf/` or near the binary:
+
+```
+[log]
+    format = "text"
+    level = "debug"
+
+[plugin]
+    port = "8887"
+```
+
+Instead of using a configuration file, environment variables can be used as well with the prefix `HTPLUGIN`. For example to configure the port where the application will listen, use the environment variable `HTPLUGIN_PLUGIN_PORT`.
+
+The project is using an in-cluster config to interact with Kubernetes so it must be deployed accordingly.
+
+To run:
+```
+kubectl run ht-k8s-action-plugin --image=banzaicloud/ht-k8s-action-plugin:$GITREV  --port=8887
+```
+
+### Event types that the plugin can understand:
+
+`prometheus.server.alert.SpotTerminationNotice` - Prepares a node for termination by draining it similarily to `kubectl drain`. It cordons the Kubernetes node by making it unschedulable (`node.Spec.Unschedulable = true`) and evicts or deletes the pods on the node that will be terminated.
