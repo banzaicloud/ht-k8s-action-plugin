@@ -3,7 +3,7 @@
 This is an action plugin for the [Hollowtrees](https://github.com/banzaicloud/hollowtrees) project.
 It interacts with the Kubernetes API to handle different Hollowtrees events in a K8S cluster. 
 
-When started it is listening on a GRPC interface and accepts Hollowtrees events.
+When started it is listening on a gRPC interface and accepts Hollowtrees events.
 
 ### Quick start
 
@@ -44,3 +44,10 @@ kubectl run ht-k8s-action-plugin --image=banzaicloud/ht-k8s-action-plugin:$GITRE
 ### Event types that the plugin can understand:
 
 `prometheus.server.alert.SpotTerminationNotice` - Prepares a node for termination by draining it similarily to `kubectl drain`. It cordons the Kubernetes node by making it unschedulable (`node.Spec.Unschedulable = true`) and evicts or deletes the pods on the node that will be terminated.
+
+### Default Hollowtrees plugins
+
+There are a few default Hollowtrees action plugins available:
+
+* Kubernetes action [plugin](https://github.com/banzaicloud/ht-k8s-action-plugin) to execute k8s operations (e.g. graceful drain)
+* AWS autoscaling group [plugin](https://github.com/banzaicloud/ht-aws-asg-action-plugin) to replace instances with a better cost or stability characteristics
