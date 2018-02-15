@@ -5,8 +5,7 @@ import (
 	"sync"
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
-	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -17,12 +16,6 @@ import (
 
 type EventRouter struct {
 	Clientset *kubernetes.Clientset
-}
-
-var log *logrus.Entry
-
-func init() {
-	log = conf.Logger().WithField("package", "plugin")
 }
 
 func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {

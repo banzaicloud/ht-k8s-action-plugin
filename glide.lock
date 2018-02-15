@@ -1,8 +1,8 @@
-hash: d9d8c4a5677d540b9dfc6758c6ee8b3b7209cf257dc518e35cc82eccfe9f069f
-updated: 2018-01-10T12:33:48.53275+01:00
+hash: 56e5cb8b0e24cd54937c858599eb3582ea7e30986c18ef9867e4640ee4ee28bf
+updated: 2018-02-15T18:15:14.65101+01:00
 imports:
 - name: github.com/banzaicloud/hollowtrees
-  version: 4d9114ef859186de4aa7e192653e572e9f770a33
+  version: ee0dbaa607e3f2320332211e62f0047859fb0b01
   subpackages:
   - action
   - actionserver
@@ -14,8 +14,6 @@ imports:
   version: ff4f55a206334ef123e4f79bbf348980da81ca46
   subpackages:
   - log
-- name: github.com/fsnotify/fsnotify
-  version: c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9
 - name: github.com/ghodss/yaml
   version: 73d445a93680fa1a78ae23a5839bad48f32ba1ee
 - name: github.com/go-openapi/jsonpointer
@@ -55,33 +53,16 @@ imports:
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
   - diskcache
-- name: github.com/hashicorp/hcl
-  version: 23c074d0eceb2b8a5bfdbb271ab780cde70f05a8
-  subpackages:
-  - hcl/ast
-  - hcl/parser
-  - hcl/scanner
-  - hcl/strconv
-  - hcl/token
-  - json/parser
-  - json/scanner
-  - json/token
 - name: github.com/json-iterator/go
   version: 36b14963da70d11297d313183d7e6388c8510e1e
 - name: github.com/juju/ratelimit
   version: 5b9ff866471762aa2ab2dced63c9fb6f53921342
-- name: github.com/magiconair/properties
-  version: 49d762b9817ba1c2e9d0c69183c2b4a8b8f1d934
 - name: github.com/mailru/easyjson
   version: 2f5df55504ebc322e4d52d34df6a1f5b503bf26d
   subpackages:
   - buffer
   - jlexer
   - jwriter
-- name: github.com/mitchellh/mapstructure
-  version: 06020f85339e21b2478f756a78e295255ffa4d6a
-- name: github.com/pelletier/go-toml
-  version: 0131db6d737cfbbfb678f8b7d92e55e27ce46224
 - name: github.com/peterbourgon/diskv
   version: 5f041e8faa004a95c88a202771f4cc3e991971e6
 - name: github.com/PuerkitoBio/purell
@@ -90,20 +71,10 @@ imports:
   version: 5bd2802263f21d8788851d5305584c82a5c75d7e
 - name: github.com/sirupsen/logrus
   version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
-- name: github.com/spf13/afero
-  version: 57afd63c68602b63ed976de00dd066ccb3c319db
-  subpackages:
-  - mem
-- name: github.com/spf13/cast
-  version: acbeb36b902d72a7a4c18e8f3241075e7ab763e4
-- name: github.com/spf13/jwalterweatherman
-  version: 7c0cea34c8ece3fbeb2b27ab9b59511d360fb394
 - name: github.com/spf13/pflag
-  version: 4c012f6dcd9546820e378d0bdda4d8fc772cdfea
-- name: github.com/spf13/viper
-  version: 25b30aa063fc18e48662b86996252eabdcf2f0c7
+  version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
 - name: golang.org/x/crypto
-  version: 6bd909f163c83732e0b5e22a27154b1a112c3ff9
+  version: 650f4a345ab4e5b245a3034b110ebc7299e68186
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
@@ -137,11 +108,11 @@ imports:
   - unicode/norm
   - width
 - name: google.golang.org/genproto
-  version: a8101f21cf983e773d0c1133ebc5424792003214
+  version: 2b5a72b8730b0b16380010cfe5286c42108d88e7
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 6913ad5caedced5d627918609375b057963334a5
+  version: 3926816d541db48f3e4c1c87cff75ceeb205309e
   subpackages:
   - balancer
   - balancer/base
@@ -150,6 +121,7 @@ imports:
   - connectivity
   - credentials
   - encoding
+  - encoding/proto
   - grpclb/grpc_lb_v1/messages
   - grpclog
   - internal
@@ -167,7 +139,7 @@ imports:
 - name: gopkg.in/inf.v0
   version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
 - name: gopkg.in/yaml.v2
-  version: d670f9405373e636a5a2765eea47fac0c9bc91a4
+  version: 53feefa2559fb8dfa8d81baad31be332c97d6c77
 - name: k8s.io/api
   version: 11147472b7c934c474a2c484af3c0c5210b7a3af
   subpackages:

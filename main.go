@@ -1,21 +1,30 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
-	"github.com/banzaicloud/ht-k8s-action-plugin/conf"
 	"github.com/banzaicloud/ht-k8s-action-plugin/plugin"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
+	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
-var log *logrus.Entry
+var (
+	logLevel = flag.String("log.level", "info", "log level")
+	bindAddr = flag.String("bind.address", ":80", "Bind address where the gRPC API is listening")
+)
 
 func init() {
-	log = conf.Logger().WithField("package", "main")
+	flag.Parse()
+	parsedLevel, err := log.ParseLevel(*logLevel)
+	if err != nil {
+		log.WithError(err).Warnf("Couldn't parse log level, using default: %s", log.GetLevel())
+	} else {
+		log.SetLevel(parsedLevel)
+		log.Debugf("Set log level to %s", parsedLevel)
+	}
 }
 
 type K8sAlertHandler struct {
@@ -48,7 +57,6 @@ func (d *K8sAlertHandler) Handle(event *as.AlertEvent) (*as.ActionResult, error)
 }
 
 func main() {
-	port := viper.GetInt("plugin.port")
-	fmt.Printf("Starting Hollowtrees ActionServer on port %d\n", port)
-	as.Serve(port, newK8sAlertHandler())
+	fmt.Printf("Starting Hollowtrees ActionServer on %s\n", *bindAddr)
+	as.Serve(*bindAddr, newK8sAlertHandler())
 }
