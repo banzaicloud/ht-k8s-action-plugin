@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"encoding/json"
+	"path/filepath"
 	"sync"
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
@@ -12,17 +13,18 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type EventRouter struct {
-	Clientset *kubernetes.Clientset
+	ClusterConfRoot string
 }
 
 func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {
 	switch event.EventType {
 	case "prometheus.server.alert.SpotTerminationNotice":
 		log.Infof("Received %s", event.EventType)
-		err := r.DrainNode(event.Data["instance"])
+		err := r.DrainNode(event.Data["instance"], event.Data["cluster_name"])
 		if err != nil {
 			return err
 		}
@@ -30,12 +32,16 @@ func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {
 	return nil
 }
 
-func (r *EventRouter) DrainNode(nodeName string) error {
-	err := r.CordonNode(nodeName)
+func (r *EventRouter) DrainNode(nodeName string, clusterName string) error {
+	c, err := r.setupClientset(clusterName)
 	if err != nil {
 		return err
 	}
-	err = r.DeletePodsOnNode(nodeName)
+	err = r.CordonNode(nodeName, c)
+	if err != nil {
+		return err
+	}
+	err = r.DeletePodsOnNode(nodeName, c)
 	if err != nil {
 		return err
 	}
@@ -43,8 +49,29 @@ func (r *EventRouter) DrainNode(nodeName string) error {
 	return nil
 }
 
-func (r *EventRouter) CordonNode(nodeName string) error {
-	node, err := r.Clientset.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
+func (r *EventRouter) setupClientset(clusterName string) (*kubernetes.Clientset, error) {
+	var kubeConfig string
+	if clusterName == "" {
+		kubeConfig = filepath.Join(r.ClusterConfRoot, "config")
+	} else {
+		kubeConfig = filepath.Join(r.ClusterConfRoot, clusterName, "config")
+	}
+	log.Infof("Using kubernetes config: %s", kubeConfig)
+	config, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
+	if err != nil {
+		log.Errorf("Failed to build k8s config: %s", err.Error())
+		return nil, err
+	}
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Errorf("Failed to create kubernetes clientset: %s\n", err.Error())
+		return nil, err
+	}
+	return c, nil
+}
+
+func (r *EventRouter) CordonNode(nodeName string, c *kubernetes.Clientset) error {
+	node, err := c.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
 	if err != nil {
 		log.Errorf("couldn't cordon node '%s': %s\n", nodeName, err.Error())
 		return err
@@ -61,7 +88,7 @@ func (r *EventRouter) CordonNode(nodeName string) error {
 		log.Errorf("couldn't cordon node '%s': %s\n", nodeName, err.Error())
 		return err
 	}
-	node, err = r.Clientset.CoreV1().Nodes().Patch(nodeName, types.MergePatchType, patch)
+	node, err = c.CoreV1().Nodes().Patch(nodeName, types.MergePatchType, patch)
 	if err != nil {
 		log.Errorf("couldn't cordon node '%s' %s\n", nodeName, err.Error())
 		return err
@@ -70,8 +97,8 @@ func (r *EventRouter) CordonNode(nodeName string) error {
 	return nil
 }
 
-func (r *EventRouter) DeletePodsOnNode(nodeName string) error {
-	pods, err := r.Clientset.CoreV1().Pods(metav1.NamespaceAll).List(metav1.ListOptions{
+func (r *EventRouter) DeletePodsOnNode(nodeName string, c *kubernetes.Clientset) error {
+	pods, err := c.CoreV1().Pods(metav1.NamespaceAll).List(metav1.ListOptions{
 		FieldSelector: fields.SelectorFromSet(fields.Set{"spec.nodeName": nodeName}).String()})
 	if err != nil {
 		log.Errorf("couldn't get pods for node %s\n", err.Error())
@@ -84,7 +111,7 @@ func (r *EventRouter) DeletePodsOnNode(nodeName string) error {
 		wg.Add(1)
 		go func(pod v1.Pod) {
 			defer wg.Done()
-			err = r.Clientset.CoreV1().Pods(pod.Namespace).Delete(pod.Name, &metav1.DeleteOptions{})
+			err = c.CoreV1().Pods(pod.Namespace).Delete(pod.Name, &metav1.DeleteOptions{})
 			if err != nil {
 				log.Errorf("couldn't delete pod %s from node %s: %s\n", pod.Name, nodeName, err.Error())
 				return

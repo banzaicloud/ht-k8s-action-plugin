@@ -3,17 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	as "github.com/banzaicloud/hollowtrees/actionserver"
 	"github.com/banzaicloud/ht-k8s-action-plugin/plugin"
 	log "github.com/sirupsen/logrus"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 var (
-	logLevel = flag.String("log.level", "info", "log level")
-	bindAddr = flag.String("bind.address", ":80", "Bind address where the gRPC API is listening")
+	logLevel          = flag.String("log.level", "info", "log level")
+	bindAddr          = flag.String("bind.address", ":8080", "Bind address where the gRPC API is listening")
+	clusterConfigRoot = flag.String("cluster.config.root", filepath.Join(os.Getenv("HOME"), ".kube"), "Root location that contains multiple k8s cluster config files")
 )
 
 func init() {
@@ -32,17 +33,10 @@ type K8sAlertHandler struct {
 }
 
 func newK8sAlertHandler() *K8sAlertHandler {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		log.Fatalf("Failed to create in cluster configuration: %s\n", err.Error())
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		log.Fatalf("Failed to create kubernetes clientset: %s\n", err.Error())
-	}
+	log.Infof("Root location of k8s configs: %s", *clusterConfigRoot)
 	return &K8sAlertHandler{
 		Router: &plugin.EventRouter{
-			Clientset: clientset,
+			ClusterConfRoot: *clusterConfigRoot,
 		},
 	}
 }

@@ -1,8 +1,8 @@
 hash: 56e5cb8b0e24cd54937c858599eb3582ea7e30986c18ef9867e4640ee4ee28bf
-updated: 2018-02-15T18:15:14.65101+01:00
+updated: 2018-02-26T15:34:38.81929+01:00
 imports:
 - name: github.com/banzaicloud/hollowtrees
-  version: ee0dbaa607e3f2320332211e62f0047859fb0b01
+  version: 636b242f2aaba31ab7656946c7482dbd13ce4919
   subpackages:
   - action
   - actionserver
@@ -53,6 +53,10 @@ imports:
   version: 787624de3eb7bd915c329cba748687a3b22666a6
   subpackages:
   - diskcache
+- name: github.com/howeyc/gopass
+  version: bf9dde6d0d2c004a008c27aaee91170c786f6db8
+- name: github.com/imdario/mergo
+  version: 6633656539c1639d9d78127b7d47c622b5d7b6dc
 - name: github.com/json-iterator/go
   version: 36b14963da70d11297d313183d7e6388c8510e1e
 - name: github.com/juju/ratelimit
@@ -74,7 +78,7 @@ imports:
 - name: github.com/spf13/pflag
   version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
 - name: golang.org/x/crypto
-  version: 650f4a345ab4e5b245a3034b110ebc7299e68186
+  version: beaf6a35706e5032ae4c3fcf342c663c069f44d2
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
@@ -112,7 +116,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 3926816d541db48f3e4c1c87cff75ceeb205309e
+  version: 583a6303969ea5075e9bd1dc4b75805dfe66989a
   subpackages:
   - balancer
   - balancer/base
@@ -265,12 +269,17 @@ imports:
   - pkg/version
   - rest
   - rest/watch
+  - tools/auth
+  - tools/clientcmd
   - tools/clientcmd/api
+  - tools/clientcmd/api/latest
+  - tools/clientcmd/api/v1
   - tools/metrics
   - tools/reference
   - transport
   - util/cert
   - util/flowcontrol
+  - util/homedir
   - util/integer
 - name: k8s.io/kube-openapi
   version: 39a7bf85c140f972372c2a0d1ee40adbf0c8bfe1
