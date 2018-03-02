@@ -35,9 +35,7 @@ type K8sAlertHandler struct {
 func newK8sAlertHandler() *K8sAlertHandler {
 	log.Infof("Root location of k8s configs: %s", *clusterConfigRoot)
 	return &K8sAlertHandler{
-		Router: &plugin.EventRouter{
-			ClusterConfRoot: *clusterConfigRoot,
-		},
+		Router: plugin.NewEventRouter(*clusterConfigRoot),
 	}
 }
 
