@@ -19,12 +19,12 @@ func (r *EventRouter) RouteEvent(event *as.AlertEvent) error {
 	log.Infof("Received %s", event.EventType)
 	switch event.EventType {
 	case "prometheus.server.alert.SpotTerminationNotice":
-		d, err := NewDrainer(r.configRoot, event.Data["cluster_name"])
+		d, err := NewDrainer(r.configRoot, event.Data["cluster_name"], event.Data["instance"])
 		if err != nil {
 			log.Errorf("Couldn't create drainer: %s", err.Error())
 			return err
 		}
-		err = d.DrainNode(event.Data["instance"])
+		err = d.DrainNode()
 		if err != nil {
 			log.Errorf("Failed to drain node: %s", err.Error())
 			return err
